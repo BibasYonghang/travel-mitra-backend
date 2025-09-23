@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Trail from "./models/Trail.js";
+import Trail from "../models/Trail.js";
 
 dotenv.config();
 
