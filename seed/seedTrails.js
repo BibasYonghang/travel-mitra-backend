@@ -34,6 +34,16 @@ const trails = [
         description: "Famous for stunning Himalayan views and sunrise.",
         image: "https://example.com/poonhill.jpg",
         coordinates: { lat: 28.3600, lng: 83.9480 }
+    },
+    {
+        name: "Poon Hill Trek",
+        location: "Ghorepani",
+        difficulty: "Moderate",
+        distance: 10,
+        duration: "4-5 hours",
+        description: "Famous for stunning Himalayan views and sunrise.",
+        image: "https://example.com/poonhill.jpg",
+        coordinates: { lat: 28.3600, lng: 83.9480 }
     }
     // Add more trails here
 ];
