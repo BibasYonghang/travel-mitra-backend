@@ -5,27 +5,29 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
-import trailRoutes from "./routes/trails.js";
+import esewaRoutes from "./routes/esewa.js";
+import orderRoutes from "./routes/orderRoute.js";
 
 const app = express();
 
-// Middleware
-app.use(cors());
+app.use(cors({
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use("/api/trails", trailRoutes);
+app.use("/api", orderRoutes);
 
-// Start server after DB connection
+app.get("/", (req, res) => res.send("Server is running"));
+
 const startServer = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
         console.log("DB connected successfully");
 
         const PORT = process.env.PORT || 5000;
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     } catch (err) {
         console.error("Failed to connect to Database", err);
         process.exit(1);
