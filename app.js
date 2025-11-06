@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 
 import esewaRoutes from "./routes/esewa.js";
 import orderRoutes from "./routes/orderRoute.js";
+import trailsRoutes from "./routes/trails.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", orderRoutes);
+app.use("/api/trails", trailsRoutes)
 
 app.get("/", (req, res) => res.send("Server is running"));
 
