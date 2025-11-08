@@ -145,6 +145,26 @@ const trails = [
         image: "https://res.cloudinary.com/dorwxf5yq/image/upload/v1762574766/big-c7841c01b98201b8f16522f34e03c3d4_gavqzq.jpg",
         coordinates: { lat: 29.1851, lng: 82.9333 }
     },
+    {
+        name: "Ghorepani Poon Hill Trek",
+        location: "Annapurna Region",
+        difficulty: "Moderate",
+        distance: 32,
+        duration: "4-5 days",
+        description: "Popular trek known for panoramic sunrise views over the Annapurna & Dhaulagiri ranges.",
+        image: "https://res.cloudinary.com/dorwxf5yq/image/upload/v1762575841/Ghorepani-pool-hill-trek_snbs7t.jpg",
+        coordinates: { lat: 28.4006, lng: 83.9142 }
+    },
+    {
+        name: "Langtang Valley Trek",
+        location: "Langtang National Park",
+        difficulty: "Moderate",
+        distance: 40,
+        duration: "5-7 days",
+        description: "Scenic trek through Langtang Valley with views of Langtang Lirung, villages, and alpine meadows.",
+        image: "https://res.cloudinary.com/dorwxf5yq/image/upload/v1762575898/langtang-trek-7-days-I_im6ts4.jpg",
+        coordinates: { lat: 28.2133, lng: 85.5333 }
+    }
 ];
 
 const seedDB = async () => {
