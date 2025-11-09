@@ -15,7 +15,7 @@ router.post("/payment", async (req, res) => {
         const response = await axios.post(
             "https://khalti.com/api/v2/payment/initiate/",
             {
-                return_url: "http://localhost:5000/api/khalti/success",
+                return_url: "https://travel-mitra-backend.onrender.com/api/khalti/success",
                 amount: amount * 100, // Khalti expects paisa
                 mobile,
                 product_identity,
