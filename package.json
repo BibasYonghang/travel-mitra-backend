@@ -10,6 +10,9 @@
     "seed:reviews": "node seed/seedReviews.js",
     "seed:all": "npm run seed:trails && npm run seed:reviews"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

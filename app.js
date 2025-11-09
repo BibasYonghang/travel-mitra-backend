@@ -13,8 +13,9 @@ import reviewsRoutes from "./routes/reviews.js"; // modified name for clarity
 const app = express();
 
 // Middleware
+
 app.use(cors({
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: "https://travel-mitraa.vercel.app/",
     credentials: true
 }));
 app.use(express.json());
