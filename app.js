@@ -15,7 +15,7 @@ const app = express();
 // Middleware
 
 app.use(cors({
-    origin: "https://travel-mitraa.vercel.app/",
+    origin: "https://travel-mitraa.vercel.app",
     credentials: true
 }));
 app.use(express.json());
