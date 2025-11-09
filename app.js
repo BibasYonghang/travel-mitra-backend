@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import esewaRoutes from "./routes/esewa.js";
 import orderRoutes from "./routes/orderRoute.js";
 import trailsRoutes from "./routes/trails.js";
-import trailsReviews from "./routes/reviews.js";
+import reviewsRoutes from "./routes/reviews.js"; // modified name for clarity
 
 const app = express();
 
@@ -23,26 +23,27 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api", orderRoutes);
 app.use("/api/trails", trailsRoutes);
-app.use("/api/reviews", trailsReviews);
+app.use("/api/reviews", reviewsRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 
 // Start Server & Connect to MongoDB
 const startServer = async () => {
     try {
-        // Use a single connection URL for your main database
-        const mongoURL = process.env.MONGO_URL_TRAILS || process.env.MONGO_URL;
-
-        if (!mongoURL) {
-            throw new Error("MongoDB connection string not found in environment variables.");
+        // Connect to Trails DB
+        if (!process.env.MONGO_URL_TRAILS) {
+            throw new Error("MONGO_URL_TRAILS not defined in .env");
         }
+        await mongoose.connect(process.env.MONGO_URL_TRAILS);
+        console.log("Trails MongoDB connected successfully");
 
-        await mongoose.connect(mongoURL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-
-        console.log("MongoDB connected successfully");
+        // Connect to Reviews DB using a separate connection
+        if (!process.env.MONGO_URL_REVIEWS) {
+            throw new Error("MONGO_URL_REVIEWS not defined in .env");
+        }
+        const reviewsConnection = await mongoose.createConnection(process.env.MONGO_URL_REVIEWS);
+        app.locals.reviewsDB = reviewsConnection; // store connection to use in router
+        console.log("Reviews MongoDB connected successfully");
 
         const PORT = process.env.PORT || 5000;
         app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

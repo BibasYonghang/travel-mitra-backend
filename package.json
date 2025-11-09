@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-      "seed": "node seed/seedTrails.js && node seed/seedReviews.js"
+    "seed:trails": "node seed/seedTrails.js",
+    "seed:reviews": "node seed/seedReviews.js",
+    "seed:all": "npm run seed:trails && npm run seed:reviews"
   },
   "keywords": [],
   "author": "",
