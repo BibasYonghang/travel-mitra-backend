@@ -33,8 +33,8 @@ export const generateSignature = (req, res) => {
             product_code,
             product_service_charge,
             product_delivery_charge,
-            success_url: 'http://localhost:5173/payment-success',
-            failure_url: 'http://localhost:5173/payment-failure',
+            success_url: 'https://travel-mitra-backend.onrender.com/payment-success',
+            failure_url: 'https://travel-mitra-backend.onrender.com/payment-failure',
             signed_field_names,
             signature
         });

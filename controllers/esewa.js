@@ -25,8 +25,8 @@ export const initiatePayment = (req, res) => {
     const product_code = "EPAYTEST"; // sandbox merchant code
 
     // URLs
-    const success_url = "http://localhost:5000/api/esewa/success";
-    const failure_url = "http://localhost:5000/api/esewa/failure";
+    const success_url = "https://travel-mitra-backend.onrender.com/api/esewa/success";
+    const failure_url = "https://travel-mitra-backend.onrender.com/api/esewa/failure";
 
     // Required signature fields
     const signed_field_names = "total_amount,transaction_uuid,product_code";
