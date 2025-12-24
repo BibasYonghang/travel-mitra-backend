@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllTrails, getTrailById, createTrail } from "../controllers/trailController.js";
+import { getAllTrails, getTrailById, createTrail } from "../controllers/trail.controller.js";
 
 const router = express.Router();
 

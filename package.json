@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
     "seed:trails": "node seed/seedTrails.js",
     "seed:reviews": "node seed/seedReviews.js",
     "seed:all": "npm run seed:trails && npm run seed:reviews"

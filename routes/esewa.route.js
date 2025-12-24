@@ -1,5 +1,5 @@
 import express from "express";
-import { initiatePayment, paymentSuccess, paymentFailure } from "../controllers/esewa.js";
+import { initiatePayment, paymentSuccess, paymentFailure } from "../controllers/esewa.controller.js";
 
 const router = express.Router();
 
