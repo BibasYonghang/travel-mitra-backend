@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "seed:trails": "node seed/seedTrails.js",
     "seed:reviews": "node seed/seedReviews.js",
     "seed:all": "npm run seed:trails && npm run seed:reviews"
@@ -23,6 +25,7 @@
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
+    "eslint": "^9.39.2",
     "express": "^5.1.0",
     "mongoose": "^8.18.1",
     "multer": "^2.0.2",
