@@ -1,4 +1,4 @@
-import Trail from "../models/Trail.model.js";
+import Trail from "../models/Trail.js";
 
 // GET all trails
 export const getAllTrails = async (req, res) => {
