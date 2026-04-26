@@ -5,6 +5,7 @@ import cors from "cors";
 import orderRoutes from "./routes/order.route.js";
 import trailsRoutes from "./routes/trails.route.js";
 import reviewsRoutes from "./routes/reviews.route.js";
+import khaltiRoutes from "./routes/khalti.route.js";
 
 // IMPORTANT: only import db file (it initializes connections)
 import "./config/db.js";
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", orderRoutes);
 app.use("/api/trails", trailsRoutes);
 app.use("/api/reviews", reviewsRoutes);
+app.use("/api/khalti", khaltiRoutes);
 
 // HEALTH CHECK
 app.get("/", (req, res) => {
