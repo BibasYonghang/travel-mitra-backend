@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { trailsDB } from "../config/db.js";
 
 const trailSchema = new mongoose.Schema(
   {
@@ -27,6 +26,6 @@ const trailSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Trail = trailsDB.model("Trail", trailSchema);
+const Trail = mongoose.model("Trail", trailSchema);
 
 export default Trail;

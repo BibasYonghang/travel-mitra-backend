@@ -1,18 +1,12 @@
 import mongoose from "mongoose";
 
-// Trails DB connection
-export const trailsDB = mongoose.createConnection(process.env.MONGO_URI_TRAILS);
+export const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
 
-// Reviews DB connection
-export const reviewsDB = mongoose.createConnection(
-  process.env.MONGO_URI_REVIEWS,
-);
-
-// Optional logs
-trailsDB.on("connected", () => {
-  console.log("✅ Trails DB Connected");
-});
-
-reviewsDB.on("connected", () => {
-  console.log("✅ Reviews DB Connected");
-});
+    console.log("✅ MongoDB Connected");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error.message);
+    process.exit(1); 
+  }
+};
