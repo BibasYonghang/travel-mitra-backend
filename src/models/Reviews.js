@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { reviewsDB } from "../config/db.js";
 
 const reviewSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -7,6 +6,6 @@ const reviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
 });
 
-const Reviews = reviewsDB.model("Reviews", reviewSchema);
+const Reviews = mongoose.model("Reviews", reviewSchema);
 
 export default Reviews;
