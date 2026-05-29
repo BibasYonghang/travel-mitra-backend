@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import Trail from "../src/models/Trail.js";
+import { index } from "../src/config/pinecone.js";
+import { createEmbedding } from "../src/services/embedding.service.js";
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.development" });
@@ -281,9 +283,42 @@ const trails = [
 const seedTrails = async () => {
   await mongoose.connect(process.env.MONGO_URI);
   await Trail.deleteMany({}); // Clear old data
-  await Trail.insertMany(trails); // Add new data
+
+  const insertedTrails = await Trail.insertMany(trails); // Add new data
   console.log("Database seeded with trails!");
-  mongoose.disconnect();
+
+  for (const trail of insertedTrails) {
+    try {
+      const text = `Trail Name: ${trail.name}\nLocation: ${trail.location}\nDifficulty: ${trail.difficulty}\nDistance: ${trail.distance}\nDuration: ${trail.duration || "N/A"}\nElevation: ${trail.elevation}\nBest Season: ${trail.bestSeason}\nStarting Point: ${trail.startingPoint}\nDescription: ${trail.description}`;
+      const embedding = await createEmbedding(text);
+
+      await index.upsert({
+        records: [
+          {
+            id: trail._id.toString(),
+            values: embedding,
+            metadata: {
+              name: trail.name,
+              location: trail.location,
+              difficulty: trail.difficulty,
+              distance: trail.distance,
+              duration: trail.duration,
+              elevation: trail.elevation,
+              bestSeason: trail.bestSeason,
+              startingPoint: trail.startingPoint,
+              description: trail.description,
+              image: trail.image,
+            },
+          },
+        ],
+      });
+    } catch (seedErr) {
+      console.error(`Failed to seed embedding for ${trail.name}:`, seedErr.message);
+    }
+  }
+
+  console.log("Pinecone trail embeddings seeded!");
+  await mongoose.disconnect();
 };
 
 seedTrails();

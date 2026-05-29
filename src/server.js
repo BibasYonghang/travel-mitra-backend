@@ -7,6 +7,7 @@ import trailsRoutes from "./routes/trails.route.js";
 import reviewsRoutes from "./routes/reviews.route.js";
 import khaltiRoutes from "./routes/khalti.route.js";
 import contactUsRoutes from "./routes/contactUs.route.js";
+import chatRoutes from "./routes/chat.route.js";
 import { connectDB } from "./config/db.js";
 
 const app = express();
@@ -32,6 +33,7 @@ app.use("/api/trails", trailsRoutes);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/khalti", khaltiRoutes);
 app.use("/api/contact-us", contactUsRoutes);
+app.use("/api", chatRoutes);
 
 // HEALTH CHECK
 app.get("/", (req, res) => {
@@ -42,7 +44,7 @@ const startServer = async () => {
   await connectDB();
 
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(` Server running on port ${PORT}`);
   });
 };
 

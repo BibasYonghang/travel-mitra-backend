@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
 
-const envFile = `.env.${process.env.NODE_ENV || "production"}`;
+const nodeEnv = process.env.NODE_ENV?.trim();
+const envFile = `.env.${nodeEnv === "production" ? "production" : "development"}`;
+
 dotenv.config({ path: envFile });
