@@ -1,6 +1,14 @@
 import "./config/env.js";
 import express from "express";
+import helmet from "helmet";
 import cors from "cors";
+import compression from "compression";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import hpp from "hpp";
+import mongoSanitize from "express-mongo-sanitize";
+import cookieParser from "cookie-parser";
+import responseTime from "response-time";
 
 import orderRoutes from "./routes/order.route.js";
 import trailsRoutes from "./routes/trails.route.js";
@@ -8,26 +16,77 @@ import reviewsRoutes from "./routes/reviews.route.js";
 import khaltiRoutes from "./routes/khalti.route.js";
 import contactUsRoutes from "./routes/contactUs.route.js";
 import chatRoutes from "./routes/chat.route.js";
+
 import { connectDB } from "./config/db.js";
 
 const app = express();
-
-// ENV
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ;
 const FRONTEND = process.env.FRONTEND_URL;
+const NODE_ENV = process.env.NODE_ENV ;
 
-// MIDDLEWARE
+app.use(
+  helmet({
+    contentSecurityPolicy: true,
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: true,
+    dnsPrefetchControl: true,
+    frameguard: true,
+    hidePoweredBy: true,
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    noSniff: true,
+    referrerPolicy: { policy: "no-referrer" },
+    xssFilter: true,
+  }),
+);
+
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: FRONTEND,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 600,
   }),
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 150,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests. Please try again later.",
+});
+app.use(globalLimiter);
 
-// ROUTES
+app.use(express.json({ limit: "10kb" })); // prevent payload flood
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+app.use(cookieParser());
+
+app.use(mongoSanitize()); // prevent NoSQL injection
+app.use(hpp()); // prevent query pollution
+
+app.use(compression());
+app.use(responseTime());
+
+if (NODE_ENV === "development") {
+  app.use(morgan("dev"));
+} else {
+  app.use(
+    morgan("combined", {
+      skip: (req, res) => res.statusCode < 400,
+    }),
+  );
+}
+
+app.disable("x-powered-by");
+
 app.use("/api", orderRoutes);
 app.use("/api/trails", trailsRoutes);
 app.use("/api/reviews", reviewsRoutes);
@@ -35,17 +94,68 @@ app.use("/api/khalti", khaltiRoutes);
 app.use("/api/contact-us", contactUsRoutes);
 app.use("/api", chatRoutes);
 
-// HEALTH CHECK
-app.get("/", (req, res) => {
-  res.send("Server is running");
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+  });
+});
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:", err);
+
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: NODE_ENV === "production" ? "Internal server error" : err.message,
+  });
 });
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(` Server running on port ${PORT}`);
-  });
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+    const shutdown = (signal) => {
+      console.log(`${signal} received. Shutting down...`);
+
+      server.close(() => {
+        console.log("HTTP server closed.");
+        process.exit(0);
+      });
+
+      setTimeout(() => {
+        console.error("Forced shutdown");
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on("SIGTERM", shutdown);
+    process.on("SIGINT", shutdown);
+
+    process.on("unhandledRejection", (err) => {
+      console.error("UNHANDLED REJECTION:", err);
+      shutdown("UNHANDLED_REJECTION");
+    });
+
+    process.on("uncaughtException", (err) => {
+      console.error("UNCAUGHT EXCEPTION:", err);
+      process.exit(1);
+    });
+  } catch (err) {
+    console.error("DB CONNECTION FAILED:", err);
+    process.exit(1);
+  }
 };
 
 startServer();
