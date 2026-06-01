@@ -29,6 +29,10 @@ export const chatController = async (req, res) => {
     res.json({
       answer: result.answer,
       trails: result.trails,
+      type: result.type,
+      page: result.page,
+      message: result.message,
+      tool: result.tool,
       orchestratorRoute: result.orchestratorRoute,
       metadata: result.metadata,
     });
