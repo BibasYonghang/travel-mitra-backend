@@ -5,7 +5,6 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
 import responseTime from "response-time";
@@ -69,8 +68,14 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 app.use(cookieParser());
 
-app.use(mongoSanitize()); // prevent NoSQL injection
-app.use(hpp()); // prevent query pollution
+app.use((req, res, next) => {
+  if (typeof mongoSanitize.sanitize === "function") {
+    if (req.body) req.body = mongoSanitize.sanitize(req.body);
+    if (req.params) req.params = mongoSanitize.sanitize(req.params);
+    if (req.headers) req.headers = mongoSanitize.sanitize(req.headers);
+  }
+  next();
+});
 
 app.use(compression());
 app.use(responseTime());

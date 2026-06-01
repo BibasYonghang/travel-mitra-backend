@@ -5,6 +5,18 @@ import { buildAiPromptMessages } from "./prompt.service.js";
 import { generateAiAnswer } from "./aiGeneration.service.js";
 import { orchestrator } from "../agents/orchestrator.js";
 
+const extractJsonObject = (text) => {
+  if (!text) return null;
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch (err) {
+    return null;
+  }
+};
+
 export const handleAIChat = async ({
   message,
   difficulty,
@@ -28,6 +40,26 @@ export const handleAIChat = async ({
     }
   }
 
+  if (
+    orchestratorResponse &&
+    typeof orchestratorResponse === "object" &&
+    orchestratorResponse.type === "navigate"
+  ) {
+    return {
+      answer: orchestratorResponse.message || "Navigating you now...",
+      type: "navigate",
+      page: orchestratorResponse.page,
+      message: orchestratorResponse.message || orchestratorResponse.answer,
+      trails: [],
+      orchestratorRoute: "navigate",
+      metadata: {
+        retrievedCount: 0,
+        returnedCount: 0,
+        similarityThreshold,
+      },
+    };
+  }
+
   let trailsForAI = [];
   let retrievedCount = 0;
 
@@ -41,7 +73,6 @@ export const handleAIChat = async ({
     });
 
     const ids = vectorResults.map((r) => r.id);
-    const fullTrails = ids.length > 0 ? await Trail.find({ _id: { $in: ids } }) : [];
     fullTrails = ids.length > 0 ? await Trail.find({ _id: { $in: ids } }) : [];
     retrievedCount = fullTrails.length;
 
@@ -70,10 +101,29 @@ export const handleAIChat = async ({
   }
 
   const answer = await generateAiAnswer({ messages });
+  const parsedResponse = extractJsonObject(answer);
+
+  if (parsedResponse?.type) {
+    return {
+      answer: parsedResponse.answer || parsedResponse.message || answer,
+      type: parsedResponse.type,
+      page: parsedResponse.page,
+      message: parsedResponse.message,
+      tool: parsedResponse.tool,
+      trails: trailsForAI,
+      orchestratorRoute: orchestratorResponse ? "used" : "skipped",
+      metadata: {
+        retrievedCount,
+        returnedCount: trailsForAI.length,
+        similarityThreshold,
+      },
+    };
+  }
 
   return {
     answer,
     trails: trailsForAI,
+    type: "chat",
     orchestratorRoute: orchestratorResponse ? "used" : "skipped",
     metadata: {
       retrievedCount,
